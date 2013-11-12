@@ -41,6 +41,8 @@ import android.os.Build;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.mseclab.devfest.androidkeystoredemostep3.R;
 
 public class MainActivity extends Activity {
@@ -284,11 +286,13 @@ public class MainActivity extends Activity {
 				debug(e.toString());
 			}
 
-			if (isSignValid)
+			if (isSignValid){
 				debug("Firma Valida");
-			else
+				Toast.makeText(getActivity(), "Firma Valida", Toast.LENGTH_LONG).show();	
+			}else{
 				debug("Firma Errata!");
-
+				Toast.makeText(getActivity(), "Firma Errata", Toast.LENGTH_LONG).show();	
+			}
 		}
 
 		private KeyStore initKeyStore() {
