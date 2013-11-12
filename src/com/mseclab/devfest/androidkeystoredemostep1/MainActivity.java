@@ -248,7 +248,13 @@ public class MainActivity extends Activity {
 		private void verificaData() {
 			byte[] data = mInData.getText().toString().getBytes();
 			byte[] stringSignature = mOutData.getText().toString().getBytes();
-			byte[] signature = Base64.decode(stringSignature, Base64.DEFAULT);
+			byte[] signature = null;
+			try {
+				signature = Base64.decode(stringSignature, Base64.DEFAULT);
+			} catch (IllegalArgumentException e) {
+				debug("String Base64 non valida");
+				return;
+			}
 
 			// Accesso alla chiave
 			KeyStore keyStore = initKeyStore();
