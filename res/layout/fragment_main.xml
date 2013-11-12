@@ -39,20 +39,31 @@
             android:text="@string/verifica_label" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/dataText"
+    <EditText
+        android:id="@+id/inDataText"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="75dp"
         android:layout_below="@id/buttons_bar"
         android:background="@drawable/textview_border"
         android:padding="10dp"
-        android:text="@string/insert_data" />
+        android:textSize="14sp"
+        android:text="@string/in_data" />
 
+    <EditText
+        android:id="@+id/outDataText"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_below="@id/inDataText"
+        android:background="@drawable/textview_border"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:text="@string/out_data" />
+    
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dataText"
+        android:layout_below="@id/outDataText"
         android:fillViewport="true"
         android:scrollbarStyle="outsideInset"
         android:layout_marginTop="10dp"

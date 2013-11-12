@@ -7,5 +7,6 @@
     <string name="genera_chiavi">Genera Chiavi</string>
     <string name="firma_label">Firma</string>
 	<string name="verifica_label">Verifica</string>
-    <string name="insert_data">Inserisci stringa da verificare</string>
+    <string name="in_data">Input:</string>
+    <string name="out_data">Output:</string>
 </resources>
