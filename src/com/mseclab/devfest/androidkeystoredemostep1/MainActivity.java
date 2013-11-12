@@ -2,6 +2,7 @@ package com.mseclab.devfest.androidkeystoredemostep1;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.cert.Certificate;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -83,13 +84,14 @@ public class MainActivity extends Activity {
 
 		private Button mGenChiaviButton;
 		private Button mFirmaButton;
+		private Button mVerificaButton;
 		private TextView mDebugText;
 		private EditText mInData;
 		private EditText mOutData;
 
-		
 		ProgressDialog progressdialog;
 
+		private static final String SIGN_ALG = "SHA256withRSA";
 		private static final String TAG = "AndroidKeyStoreDemo";
 
 		public PlaceholderFragment() {
@@ -98,11 +100,16 @@ public class MainActivity extends Activity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			
+
+			// Bottoni
 			mGenChiaviButton = (Button) rootView.findViewById(R.id.generate_button);
 			mGenChiaviButton.setOnClickListener(this);
 			mFirmaButton = (Button) rootView.findViewById(R.id.firma_button);
 			mFirmaButton.setOnClickListener(this);
+			mVerificaButton = (Button) rootView.findViewById(R.id.verifica_button);
+			mVerificaButton.setOnClickListener(this);
+
+			// Text View
 			mInData = (EditText) rootView.findViewById(R.id.inDataText);
 			mOutData = (EditText) rootView.findViewById(R.id.outDataText);
 			mDebugText = (TextView) rootView.findViewById(R.id.debugText);
@@ -121,6 +128,10 @@ public class MainActivity extends Activity {
 			case R.id.firma_button:
 				debug("Cliccato Firma");
 				firmaData();
+				break;
+			case R.id.verifica_button:
+				debug("Cliccato Verifica");
+				verificaData();
 				break;
 
 			}
@@ -207,12 +218,12 @@ public class MainActivity extends Activity {
 			try {
 				keyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
 				RSAPrivateKey privKey = (RSAPrivateKey) keyEntry.getPrivateKey();
-				
+
 				// Calcola firma
-				Signature s = Signature.getInstance("SHA256withRSA");
+				Signature s = Signature.getInstance(SIGN_ALG);
 				s.initSign(privKey);
 				s.update(rawData);
-				signature = s.sign();	
+				signature = s.sign();
 			} catch (NoSuchAlgorithmException e) {
 				debug(e.toString());
 			} catch (UnrecoverableEntryException e) {
@@ -224,14 +235,53 @@ public class MainActivity extends Activity {
 			} catch (SignatureException e) {
 				debug(e.toString());
 			}
-			
-			// OK! 
-			if (signature != null){
+
+			// OK!
+			if (signature != null) {
 				String signData = Base64.encodeToString(signature, Base64.DEFAULT);
 				mOutData.setText(signData);
-				debug("Firma Calcolata:\n"+signData);
+				debug("Firma Calcolata:\n" + signData);
 			}
-			
+
+		}
+
+		private void verificaData() {
+			byte[] data = mInData.getText().toString().getBytes();
+			byte[] stringSignature = mOutData.getText().toString().getBytes();
+			byte[] signature = Base64.decode(stringSignature, Base64.DEFAULT);
+
+			// Accesso alla chiave
+			KeyStore keyStore = initKeyStore();
+			if (keyStore == null)
+				return;
+
+			KeyStore.PrivateKeyEntry keyEntry;
+			boolean isSignValid = false;
+			try {
+				keyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
+				Certificate cert = keyEntry.getCertificate();
+
+				// Verifica firma
+				Signature s = Signature.getInstance(SIGN_ALG);
+				s.initVerify(cert);
+				s.update(data);
+				isSignValid = s.verify(signature);
+			} catch (NoSuchAlgorithmException e) {
+				debug(e.toString());
+			} catch (UnrecoverableEntryException e) {
+				debug(e.toString());
+			} catch (KeyStoreException e) {
+				debug(e.toString());
+			} catch (InvalidKeyException e) {
+				debug(e.toString());
+			} catch (SignatureException e) {
+				debug(e.toString());
+			}
+
+			if (isSignValid)
+				debug("Firma Valida");
+			else
+				debug("Firma Errata!");
 
 		}
 
