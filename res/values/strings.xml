@@ -5,5 +5,7 @@
     <string name="hello_world">Hello GDG DevFest Rome 2013!\n</string>
     <string name="action_settings">Settings</string>
     <string name="genera_chiavi">Genera Chiavi</string>
-
+    <string name="firma_label">Firma</string>
+	<string name="verifica_label">Verifica</string>
+    <string name="insert_data">Inserisci stringa da verificare</string>
 </resources>
