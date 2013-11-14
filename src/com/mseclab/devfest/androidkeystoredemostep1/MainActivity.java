@@ -205,21 +205,28 @@ public class MainActivity extends Activity {
 
 		}
 
+		private KeyStore keyStore = null;
+		private KeyStore.PrivateKeyEntry entry = null;
+
 		private void firmaData() {
 			String data = mInData.getText().toString();
 			debug("Stringa da firmare:" + data);
 			byte[] rawData = data.getBytes();
 
-			// Accesso alla chiave
-			KeyStore keyStore = initKeyStore();
-			if (keyStore == null)
-				return;
-
-			KeyStore.PrivateKeyEntry keyEntry;
 			byte[] signature = null;
 			try {
-				keyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
-				RSAPrivateKey privKey = (RSAPrivateKey) keyEntry.getPrivateKey();
+
+				// Accesso alla chiave
+				keyStore = initKeyStore();
+				if (keyStore == null)
+					return;
+
+				entry = (KeyStore.PrivateKeyEntry) dammiElementoDalKeystore();
+				if (entry == null)
+					return;
+
+				entry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
+				RSAPrivateKey privKey = (RSAPrivateKey) entry.getPrivateKey();
 
 				// Calcola firma
 				Signature s = Signature.getInstance(SIGN_ALG);
@@ -258,16 +265,20 @@ public class MainActivity extends Activity {
 				return;
 			}
 
-			// Accesso alla chiave
-			KeyStore keyStore = initKeyStore();
-			if (keyStore == null)
-				return;
-
-			KeyStore.PrivateKeyEntry keyEntry;
+			
 			boolean isSignValid = false;
 			try {
-				keyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
-				Certificate cert = keyEntry.getCertificate();
+				// Accesso alla chiave
+				keyStore = initKeyStore();
+				if (keyStore == null)
+					return;
+
+				entry = (KeyStore.PrivateKeyEntry) dammiElementoDalKeystore();
+				if (entry == null)
+					return;
+
+				entry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(ALIAS, null);
+				Certificate cert = entry.getCertificate();
 
 				// Verifica firma
 				Signature s = Signature.getInstance(SIGN_ALG);
@@ -286,13 +297,32 @@ public class MainActivity extends Activity {
 				debug(e.toString());
 			}
 
-			if (isSignValid){
+			if (isSignValid) {
 				debug("Firma Valida");
-				Toast.makeText(getActivity(), "Firma Valida", Toast.LENGTH_LONG).show();	
-			}else{
+				Toast.makeText(getActivity(), "Firma Valida", Toast.LENGTH_LONG).show();
+			} else {
 				debug("Firma Errata!");
-				Toast.makeText(getActivity(), "Firma Errata", Toast.LENGTH_LONG).show();	
+				Toast.makeText(getActivity(), "Firma Errata", Toast.LENGTH_LONG).show();
 			}
+		}
+
+		// Load the key pair from the Android Key Store
+		private KeyStore.Entry dammiElementoDalKeystore() {
+			KeyStore.Entry entry = null;
+			try {
+				entry = keyStore.getEntry(ALIAS, null);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnrecoverableEntryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (KeyStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return entry;
+
 		}
 
 		private KeyStore initKeyStore() {
@@ -303,12 +333,12 @@ public class MainActivity extends Activity {
 
 			} catch (KeyStoreException e) {
 				debug("KeyStore Exception Error: " + e);
-			} catch (NoSuchAlgorithmException e1) {
-				debug(e1.toString());
-			} catch (CertificateException e1) {
-				debug(e1.toString());
-			} catch (IOException e1) {
-				debug(e1.toString());
+			} catch (NoSuchAlgorithmException e) {
+				debug(e.toString());
+			} catch (CertificateException e) {
+				debug(e.toString());
+			} catch (IOException e) {
+				debug(e.toString());
 			}
 			return keyStore;
 		}
