@@ -1,4 +1,4 @@
-package com.mseclab.devfest.androidkeystoredemostep1;
+package com.mseclab.devfest.androidkeystoredemostep3;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -261,7 +261,7 @@ public class MainActivity extends Activity {
 			try {
 				signature = Base64.decode(stringSignature, Base64.DEFAULT);
 			} catch (IllegalArgumentException e) {
-				debug("String Base64 non valida");
+				debug("String Base64 non valida ");
 				return;
 			}
 
